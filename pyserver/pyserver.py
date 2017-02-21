@@ -28,24 +28,7 @@ def sendMsg(radio,msg):
 	while(len(msg)<32):
 		msg.append(0)
 	radio.write(msg)
-	radio.startListening()
-	start = time.time()
-	print("sent the message:{}".format(msg))
-	while not radio.available(0):
-		time.sleep(1/100)
-		if time.time()-start>5:
-			print("did not get the moisture value within 5s")
-			break
-	receivedMsg = []
-	radio.read(receivedMsg,radio.getDynamicPayloadSize())
-	print("received:{}".format(receivedMsg))
-	print("translating received msg into unicode ...")
-	str = ""
-	for n in receivedMsg:
-		if(n>=32 and n<=126):
-			str+=chr(n)
-	radio.stopListening()
-	return str
+	
 def setupServer():
 	s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 	print("Socket created at port: "+str(port))
@@ -65,9 +48,25 @@ def setupConnection():
 def CHM(radio):
 	msg = "CHM";
 	print("checking moisture value")
-	moisture_value = sendMsg(radio,msg)
-	reply = moisture_value
-	return reply
+	sendMsg(radio,msg)
+	radio.startListening()
+	start = time.time()
+	print("sent the message:{}".format(msg))
+	while not radio.available(0):
+		time.sleep(1/100)
+		if time.time()-start>5:
+			print("did not get the moisture value within 5s")
+			break
+	receivedMsg = []
+	radio.read(receivedMsg,radio.getDynamicPayloadSize())
+	print("received:{}".format(receivedMsg))
+	print("translating received msg into unicode ...")
+	str = ""
+	for n in receivedMsg:
+		if(n>=32 and n<=126):
+			str+=chr(n)
+	radio.stopListening()
+	return str
 
 def WATER():
 	print("watering started")
