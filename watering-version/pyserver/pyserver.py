@@ -87,6 +87,7 @@ def WATER(radio):
 	for n in receivedMsg:
 		if(n>=32 and n<=126):
 			str+=chr(n)
+	print(str)
 	radio.stopListening()
 	return str
 
